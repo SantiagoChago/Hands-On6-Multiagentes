@@ -7,7 +7,6 @@ public class RegresionPolinomial {
     public void fit(double[] x, double[] y) {
         int n = x.length;
         float[][] matrizDiseño = new float[n][grado + 1];
-        // Construir la matriz de diseño
         for (int i = 0; i < n; i++) {
             for (int j = 0; j <= grado; j++) {
                 matrizDiseño[i][j] = (float) Math.pow(x[i], j); // Convertir a float

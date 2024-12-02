@@ -3,45 +3,42 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 
 public class AgenteSLR extends Agent {
+    private DataSet dataSet = new DataSet();
+
     @Override
     protected void setup() {
-        System.out.println("Agente SLR iniciado.");
+        System.out.println("Agente SLR iniciado " );
         addBehaviour(new CyclicBehaviour() {
             @Override
             public void action() {
                 ACLMessage msg = receive();
                 if (msg != null && msg.getPerformative() == ACLMessage.REQUEST) {
                     String contenido = msg.getContent();
-                    System.out.println("Agente SLR Recibiendo datos: " + contenido);
-                    String[] pares = contenido.split(" ");
-                    double[] x = new double[pares.length];
-                    double[] y = new double[pares.length];
-                    for (int i = 0; i < pares.length; i++) {
-                        String[] valores = pares[i].replace("(", "").replace(")", "").split(",");
-                        x[i] = Double.parseDouble(valores[0]);
-                        y[i] = Double.parseDouble(valores[1]);
+                    System.out.println("Agente SLR Recibiendo datos : " + contenido);
+                    double[] x = dataSet.getDataSetX();
+                    double[] y = dataSet.getDataSetY();
+                    double[] coeficientes = RegresionSimple.calcularSLR(x, y);
+                    double[] predicciones = new double[x.length];
+                    for (int i = 0; i < x.length; i++) {
+                        predicciones[i] = MateDiscret.predecirValor(coeficientes, x[i]);
                     }
-                    double[] coeficientes = MateDiscret.calcularSLR(x, y);
-                    // Imprimir ecuación ajustada
-                    String ecuacion = "y = " + coeficientes[0] + " + " + coeficientes[1] + " * X";
-                    double[] nuevosValoresX = {60, 70, 80, 90, 100};  // Ejemplo de nuevos valores de X
-                    for (double valorX : nuevosValoresX) {
-                        double prediccion = MateDiscret.predecirValor(coeficientes, valorX);
-                        System.out.println("Publicidad: " + valorX + "  Predicción de ventas: " + prediccion);
+
+                    double r2 = RCuadrada.calcularRCuadrada(y, predicciones);
+                    double[] nuevosValoresX = {60, 70, 80, 90, 100};
+                    StringBuilder prediccionesNuevas = new StringBuilder("Predicciones : \n");
+                    for (double valor : nuevosValoresX) {
+                        double prediccion = MateDiscret.predecirValor(coeficientes, valor);
+                        prediccionesNuevas.append("X : ").append(valor).append(", Y : ").append(prediccion).append("\n");
                     }
-                    // Calcular R cuadrada
-                    double[] yPredicha = new double[y.length];
-                    for (int i = 0; i < y.length; i++) {
-                        yPredicha[i] = MateDiscret.predecirValor(coeficientes, x[i]);
-                    }
-                    double rCuadrada = MateDiscret.calcularRCuadrada(y, yPredicha);
-                    System.out.println("R cuadrada: " + rCuadrada);
-                    // Enviar los coeficientes y R cuadrada al agente principal
-                    ACLMessage respuesta = new ACLMessage(ACLMessage.INFORM);
-                    respuesta.setContent("Coeficientes SLR Intercepto = " + coeficientes[0] + " Pendiente = " + coeficientes[1] + " R2 = " + rCuadrada);
-                    respuesta.addReceiver(msg.getSender());
+                    ACLMessage respuesta = msg.createReply();
+                    respuesta.setPerformative(ACLMessage.INFORM);
+                    respuesta.setContent("Coeficientes SLR :\n" +
+                            "Intercepto : " + coeficientes[0] + "\n" +
+                            "Pendiente : " + coeficientes[1] + "\n" +
+                            "R2 : " + r2 + "\n" +
+                            prediccionesNuevas);
                     send(respuesta);
-                    System.out.println("Agente SLR Enviado Resultado:");
+                    System.out.println("Agente SLR Enviado Resultado ");
                 } else {
                     block();
                 }
