@@ -8,7 +8,7 @@ public class AgentePrincipal extends Agent {
     protected void setup() {
         System.out.println("Iniciando AgentePrincipal");
         menuRegresiones = new MenuRegresiones();
-        menuRegresiones.configurarRegresion("polinomial"); // Configura la regresión polinomial
+        menuRegresiones.configurarRegresion("simple"); // Configura la regresión polinomial
         addBehaviour(new jade.core.behaviours.CyclicBehaviour() {
             @Override
             public void action() {

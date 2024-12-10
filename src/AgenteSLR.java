@@ -17,26 +17,26 @@ public class AgenteSLR extends Agent {
                     System.out.println("Agente SLR Recibiendo datos : " + contenido);
                     double[] x = dataSet.getDataSetX();
                     double[] y = dataSet.getDataSetY();
-                    double[] coeficientes = RegresionSimple.calcularSLR(x, y);
-                    double[] predicciones = new double[x.length];
+                    double[] coeficientesSLR = RegresionSimple.calcularSLR(x, y);
+                    double[] prediccionesSLR = new double[x.length];
                     for (int i = 0; i < x.length; i++) {
-                        predicciones[i] = MateDiscret.predecirValor(coeficientes, x[i]);
+                        prediccionesSLR[i] = MateDiscret.predecirValor(coeficientesSLR, x[i]);
                     }
-
-                    double r2 = RCuadrada.calcularRCuadrada(y, predicciones);
-                    double[] nuevosValoresX = {60, 70, 80, 90, 100};
-                    StringBuilder prediccionesNuevas = new StringBuilder("Predicciones : \n");
-                    for (double valor : nuevosValoresX) {
-                        double prediccion = MateDiscret.predecirValor(coeficientes, valor);
-                        prediccionesNuevas.append("X : ").append(valor).append(", Y : ").append(prediccion).append("\n");
+                    double r2SLR = RCuadrada.calcularRCuadrada(y, prediccionesSLR);
+                    double[] coeficientesAG = AlgoritmoGenetico.optimizarSLR(x, y);
+                    double[] prediccionesAG = new double[x.length];
+                    for (int i = 0; i < x.length; i++) {
+                        prediccionesAG[i] = MateDiscret.predecirValor(coeficientesAG, x[i]);
                     }
+                    double r2AG = RCuadrada.calcularRCuadrada(y, prediccionesAG);
+                    System.out.println("SLR Clásico:");
+                    System.out.println("Intercepto: " + String.format("%.6f", coeficientesSLR[0]) + ", Pendiente: " + String.format("%.6f", coeficientesSLR[1]) + ", R2: " + String.format("%.6f", r2SLR));
+                    System.out.println("SLR con AG:");
+                    System.out.println("Intercepto: " + String.format("%.6f", coeficientesAG[0]) + ", Pendiente: " + String.format("%.6f", coeficientesAG[1]) + ", R2: " + String.format("%.6f", r2AG));
                     ACLMessage respuesta = msg.createReply();
                     respuesta.setPerformative(ACLMessage.INFORM);
-                    respuesta.setContent("Coeficientes SLR :\n" +
-                            "Intercepto : " + coeficientes[0] + "\n" +
-                            "Pendiente : " + coeficientes[1] + "\n" +
-                            "R2 : " + r2 + "\n" +
-                            prediccionesNuevas);
+                    respuesta.setContent("Resultados:\n"+"Intercepto: " + String.format("%.6f", coeficientesSLR[0])+", Pendiente: " + String.format("%.6f", coeficientesSLR[1]) + ", R2: " + String.format("%.6f", r2SLR) + "\n" + "SLR con AG:\n" + "Intercepto: " + String.format("%.6f", coeficientesAG[0]) + "," +
+                            " Pendiente: " + String.format("%.6f", coeficientesAG[1]) + ", R2: " + String.format("%.6f", r2AG));
                     send(respuesta);
                     System.out.println("Agente SLR Enviado Resultado ");
                 } else {

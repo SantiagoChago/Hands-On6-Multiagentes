@@ -1,7 +1,8 @@
 public class DataSet {
-    private double[] dataSetX = {23, 26, 30, 34, 43, 48, 52, 57, 58};
+    private double[] dataSetX = {1,2,3,4,5,6,7,8,9};
     protected double[] dataSetX2 = {529, 676, 900, 1156, 1849, 2304, 2704, 3249, 3364};
-    private double[] dataSetY = {651, 762, 856, 1063, 1190, 1298, 1421, 1440, 1518};
+    private double[] dataSetY = {4,8,12,16,20,24,28,32,36};
+
     public double[] getDataSetX() {
         return dataSetX;
     }
@@ -21,5 +22,14 @@ public class DataSet {
             }
         }
         return builder.toString();
+    }
+    public double[] optimizarSLR() {
+        return AlgoritmoGenetico.optimizarSLR(dataSetX, dataSetY);
+    }
+    public void mostrarResultadosSLR() {
+        double[] coeficientes = optimizarSLR();
+        System.out.println("Resultados del simple  con Algoritmo Genético:");
+        System.out.println("Intercepto : "+coeficientes[0]);
+        System.out.println("Pendiente : "+coeficientes[1]);
     }
 }
