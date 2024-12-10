@@ -49,7 +49,7 @@ public class AgentePolinomial extends Agent {
                     for (int i = 0; i < coeficientes.length; i++) {
                         respuesta.append("b").append(i).append("=").append(coeficientes[i]).append(" ");
                     }
-                    respuesta.append("\nR^2: ").append(r2);
+                    respuesta.append("\nR2: ").append(r2);
                     ACLMessage mensajeRespuesta = mensaje.createReply();
                     mensajeRespuesta.setPerformative(ACLMessage.INFORM);
                     mensajeRespuesta.setContent(respuesta.toString().trim());
